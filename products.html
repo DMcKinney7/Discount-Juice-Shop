@@ -1,81 +1,71 @@
-<!DOCTYPE HTML>
-<html lang=en>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-    <title>Welcome to Disco Juice!</title>
+    <title>Products</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhl0M6oQbuKi/CF2ace4t1DibbzCzPrz5blmR0iLu+15HQE10p9umyrqYHZsvh/U" crossorigin="anonymous">
     <style>
-    h2 {
-        color: green;
-    }
+       .product {
+            margin-bottom: 20px;
+        }
+       .product img {
+            max-width: 200px;
+            height: auto;
+        }
     </style>
+    <link rel="stylesheet" href="default.css">
 </head>
 
 <body>
     <!-- Here's the header -->
-    <h1>Products</h1> <img alt="Orange Juice" src="./orange_juice.jpg" width="40" />
-    <p>Thanks for stopping by!</p>
-    <p>Please purchase our <a href="./index.html">products</a>. We have good juices.</p>
-    <!-- Here's the orange juice -->
-    <h2>Orange Juice</h2>
-    <p>Buy it because it's:</p>
-    <ol type="a">
-        <li>Orange</li>
-        <li>Tasty</li>
-        <li>Pulpy</li>
-    </ol>
-    <p>
-        <button onclick="alert('Thanks for your purchase')">Buy Now</button>
-    </p>
-    <!-- Here's the apple juice -->
-    <h2 id="apple">Apple Juice</h2>
-    <p>Most consistently ranked >★★.</p>
-    <table style="font-size: .7rem; border: 1px solid #000000;">
-        <thead>
-            <tr>
-                <th>Amount Per Serving</th>
-                <th>%DV</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Total Fat 0 g</td>
-                <td>0%</td>
-            </tr>
-            <tr>
-                <td>Sodium 30 mg</td>
-                <td>1%</td>
-            </tr>
-            <tr>
-                <td>Total Carbohydrates 29 g</td>
-                <td>10%</td>
-            </tr>
-            <tr>
-                <td>Sugar 28 g</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>Protein 0 g</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>Vitamin C </td>
-                <td>120%</td>
-            </tr>
-            <tr>
-                <td>Iron </td>
-                <td>6%</td>
-            </tr>
-            <tr>
-                <td>Potassium 290 mg</td>
-                <td>6%</td>
-            </tr>
-        </tbody>
-    </table>
-    <p>
-        <button onclick="document.getElementById('apple').style.color='red'">Buy Now</button>
-    </p>
-    <!-- Here's the footer -->
-    <p>This site is sponsored by <a href="//www.wctc.edu">www.wctc.edu</a> and <a href="https://www.google.com/search?q=funny+cat">www.google.com</a></p>
+    <div class="container">
+        <h1 class="text-center my-4">Products</h1>
+        <img alt="Disco Juice Logo" src="./images/logo.jpg" width="200" />
+        <p class="text-center">Our mission is to provide the freshest and most delicious juices to our customers.</p>
+        <p class="text-center"><a href="./index.html" class="btn btn-primary">Go Back to Home</a></p>
+    </div>
+
+    <!-- Here's the Products page link -->
+    <div class="container">
+        <h2 class="text-center my-4">Our Products</h2>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+            <div class="col">
+                <div class="card h-100">
+                    <img src="./images/orange_juice.jpg" class="card-img-top" alt="Orange Juice" width="100">
+                    <div class="card-body">
+                        <h3 class="card-title">Orange Juice</h3>
+                        <p class="card-text">$5.99</p>
+                        <p class="card-text">Our famous orange juice is made from the finest oranges, ensuring a burst of citrusy goodness in every sip.</p>
+                        <a href="#" class="btn btn-primary">Buy Now</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <img src="./images/apple_juice.jpg" class="card-img-top" alt="Apple Juice" width="100">
+                    <div class="card-body">
+                        <h3 class="card-title">Apple Juice</h3>
+                        <p class="card-text">$4.99</p>
+                        <p class="card-text>Packed with the natural sweetness of apples, our apple juice is a refreshing and healthy choice.</p>
+                        <a href="#" class="btn btn-primary">Buy Now</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <img src="./images/carrot_juice.jpg" class="card-img-top" alt="Carrot Juice" width="100">
+                    <div class="card-body">
+                        <h3 class="card-title">Carrot Juice</h3>
+                        <p class="card-text">$6.99</p>
+                        <p class="card-text>Packed with vitamins and nutrients, our carrot juice is perfect for a healthy and energizing start to your day.</p>
+                        <a href="#" class="btn btn-primary">Buy Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
