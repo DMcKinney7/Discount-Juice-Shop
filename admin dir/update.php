@@ -1,7 +1,7 @@
-<?php require_once "db.inc"; ?>
+<?php require_once "/var/www/html/Discount-Juice-Shop/db.inc.php"; ?>
 <html>
 <body>
-
+<?php include("header.inc.php"); ?>
 <?php
 
 $myid = $_REQUEST['id'];

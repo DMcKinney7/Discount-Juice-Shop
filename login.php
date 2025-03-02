@@ -1,7 +1,9 @@
+<?php include("header.inc.php"); ?>
+<title>Discount Juice Shop Log-In Portal</title>
 <?php
 session_start();
 
-require_once "/var/www/html/Discount-Juice-Shop/db.inc.php";
+require_once "/var/www/html/Discount-Juice-Shop/Connections/db.inc.php";
 
 $myusername = $_REQUEST['username'];
 $mypassword = $_REQUEST['password'];

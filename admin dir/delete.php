@@ -1,7 +1,12 @@
 <?php require_once "db.inc"; ?>
 <html>
 <body>
-
+<nav>
+	<ul>
+		<li><a href='index.html'>home</a></li>
+		<li><a href='products.html'>products</a></li>
+		<li><a href='login.php'>sign in</a></li>
+</nav>
 <?php
 
 $myid = $_REQUEST['id'];
