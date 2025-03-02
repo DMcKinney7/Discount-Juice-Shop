@@ -3,18 +3,18 @@ session_start();
 
 // Define an array of navigation items
 $navItems = [
-    ['label' => 'Home', 'url' => 'index.php'],
-    ['label' => 'Product', 'url' => 'products.php']
+    ['label' => 'Home', 'url' => '../index.php'],
+    ['label' => 'Products', 'url' => '../products.php'],
+    ['label' => 'Create Product', 'url' => '../admin dir/create.php'],
+    ['label' => 'Update Product', 'url' => '../admin dir/update.php'],
+    ['label' => 'Delete Product', 'url' => '../admin dir/delete.php']
 ];
 
 // Check if the user is signed in
 if (isset($_SESSION['signed_in']) && $_SESSION['signed_in'] === true) {
-    if ($_SESSION['username'] === 'bitstudent') {
-        $navItems[] = ['label' => 'Admin', 'url' => 'admin dir/admin.php'];
-    }
-    $navItems[] = ['label' => 'Log out', 'url' => 'logout.php'];
+    $navItems[] = ['label' => 'Log out', 'url' => '../logout.php'];
 } else {
-    $navItems[] = ['label' => 'Sign in', 'url' => 'login.php'];
+    $navItems[] = ['label' => 'Sign in', 'url' => '../login.php'];
 }
 ?>
 

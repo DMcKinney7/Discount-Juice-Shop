@@ -1,44 +1,71 @@
-<?php require_once "/var/www/html/Discount-Juice-Shop/db.inc.php"; ?>
-<html>
-<body>
-<?php include("header.inc.php"); ?>
 <?php
+session_start();
+require_once "/var/www/html/Discount-Juice-Shop/Connections/db.inc.php";
 
-$myid = $_REQUEST['id'];
-$myname = $_REQUEST['name'];
-$myprice = $_REQUEST['price'];
-
-if($_REQUEST['name']) {
-	$sql = "UPDATE products SET name='$myname', price=$myprice WHERE id=$myid";
-
-	// This is the procedural style to query the database
-	if(mysqli_query($mysqli, $sql) === TRUE){
-		echo "$myname updated successfully!";
-	} else {
-		echo "Error: $sql <br>" . mysqli_error($mysqli);
-	}
+// Check if the user is logged in and is 'bitstudent'
+if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'bitstudent') {
+    // Redirect to the login page if not logged in or not 'bitstudent'
+    header("Location: /login.php");
+    exit();
 }
-
-$sql = "SELECT * FROM products WHERE id=$myid";
-
-// This is the procedural style to query the database
-$result = mysqli_query($mysqli, $sql);
-
-$row = mysqli_fetch_array($result);
-
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Update Product - Discount Juice Shop</title>
+    <link rel="stylesheet" href="../default.css">
+</head>
+<body>
+<?php include("adminheader.inc.php"); ?>
 
-<form>
-	<input type="hidden" name="id" value="<?= $row['id'] ?>" />
+<div class="container">
+    <h1>Update Product</h1>
 
-	<label>Name:</label>
-	<input type="text" name="name" value="<?php echo $row['name'] ?>" />
+    <?php
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $myid = $mysqli->real_escape_string($_POST['id']);
+        $myname = $mysqli->real_escape_string($_POST['name']);
+        $myprice = $mysqli->real_escape_string($_POST['price']);
 
-	<label>Price:</label>
-	<input type="text" name="price" value="<?= $row['price'] ?>" />
+        if (!empty($myname) && is_numeric($myprice)) {
+            $stmt = $mysqli->prepare("UPDATE products SET name=?, price=? WHERE id=?");
+            $stmt->bind_param("sdi", $myname, $myprice, $myid);
 
-	<input type="submit" value="update" />
-</form>
+            if ($stmt->execute()) {
+                echo "<p class='message'>$myname updated successfully!</p>";
+            } else {
+                echo "<p class='error'>Error: " . $stmt->error . "</p>";
+            }
+
+            $stmt->close();
+        } else {
+            echo "<p class='error'>Please enter a valid name and price.</p>";
+        }
+    }
+
+    if (isset($_GET['id'])) {
+        $myid = $mysqli->real_escape_string($_GET['id']);
+        $stmt = $mysqli->prepare("SELECT * FROM products WHERE id=?");
+        $stmt->bind_param("i", $myid);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+    }
+    ?>
+
+    <form method="POST" action="update.php">
+        <input type="hidden" name="id" value="<?= htmlspecialchars($row['id']) ?>" />
+
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="<?= htmlspecialchars($row['name']) ?>" required />
+
+        <label for="price">Price:</label>
+        <input type="number" step="0.01" id="price" name="price" value="<?= htmlspecialchars($row['price']) ?>" required />
+
+        <input type="submit" value="Update" />
+    </form>
+</div>
 
 </body>
 </html>

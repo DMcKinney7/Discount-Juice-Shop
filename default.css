@@ -1,51 +1,142 @@
-/* main.css */
-
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f8f9fa;
+    font-family: 'Times New Roman', Times, serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
     color: #333;
 }
 
-.navbar {
-    background-color: #ffc107;
-    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.1);
+.container {
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
 }
 
-.navbar-brand {
-    font-weight: bold;
-    font-size: 1.5rem;
+.logo {
+    max-width: 200px;
+    height: auto;
 }
 
-.navbar-nav li {
-    margin-left: 20px;
-}
-
-nav a {
-    color: #333;
-    transition: color 0.3s ease;
-}
-
-nav a:hover {
-    color: #ffc107;
-}
-
-h1 {
-    font-size: 3.5rem;
+h1, h2 {
+    color: green;
+    text-align: center;
     margin-bottom: 20px;
 }
 
-.mission {
-    font-size: 1.1rem;
-    line-height: 1.6;
+form {
+    margin: 20px 0;
+    text-align: center;
 }
 
-.mission::after {
-    content: '';
+form input[type="text"],
+form input[type="number"] {
+    padding: 10px;
+    width: 300px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+form input[type="submit"] {
+    padding: 10px 20px;
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+form input[type="submit"]:hover {
+    background-color: darkgreen;
+}
+
+.product-list {
+    background: white;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.product-item {
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+}
+
+.product-item:last-child {
+    border-bottom: none;
+}
+
+.product-item a {
+    margin-left: 10px;
+    color: blue;
+    text-decoration: none;
+}
+
+.product-item a:hover {
+    text-decoration: underline;
+}
+
+.message {
+    text-align: center;
+    color: green;
+    margin-top: 20px;
+}
+
+.error {
+    text-align: center;
+    color: red;
+    margin-top: 20px;
+}
+
+nav {
+    background-color: #333;
+    overflow: hidden;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li {
+    float: left;
+}
+
+nav ul li a {
     display: block;
-    height: 40px;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
 }
 
-.img-fluid {
-    border-radius: 10px;
-    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.1);
+nav ul li a:hover {
+    background-color: #111;
+}
+
+@media (max-width: 768px) {
+    .container {
+        width: 95%;
+    }
+
+    nav ul li {
+        float: none;
+        width: 100%;
+    }
+
+    form input[type="text"],
+    form input[type="number"] {
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    form input[type="submit"] {
+        width: 100%;
+    }
 }
