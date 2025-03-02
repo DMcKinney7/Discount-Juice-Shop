@@ -3,9 +3,8 @@
 <p>This is text from HTML.</p>
 <?php
 
-echo "<p>This is text from PHP.</p>";
-phpinfo();
 
+echo "php works";
 ?>
 </body>
 </html>
