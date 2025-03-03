@@ -23,8 +23,9 @@ if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'admin') {
 
     <?php
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $myname = $mysqli->real_escape_string($_POST['name']);
-        $myprice = $mysqli->real_escape_string($_POST['price']);
+        // SQL injection mitigation: Use prepared statements with parameterized queries
+        $myname = $_POST['name'];
+        $myprice = $_POST['price'];
 
         if (!empty($myname) && is_numeric($myprice)) {
             $stmt = $mysqli->prepare("INSERT INTO products (name, price) VALUES (?, ?)");

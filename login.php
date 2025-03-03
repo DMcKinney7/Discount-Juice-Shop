@@ -16,9 +16,11 @@ require_once "/var/www/html/Discount-Juice-Shop/Connections/db.inc.php";
 
     <?php
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        // SQL injection mitigation: Use real_escape_string to sanitize user input
         $myusername = $mysqli->real_escape_string($_POST['username']);
         $mypassword = $mysqli->real_escape_string($_POST['password']);
 
+        // SQL injection mitigation: Use prepared statements with parameterized queries
         $stmt = $mysqli->prepare("SELECT * FROM users WHERE username=? AND password=SHA2(?, 256)");
         $stmt->bind_param("ss", $myusername, $mypassword);
         $stmt->execute();

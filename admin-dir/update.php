@@ -23,18 +23,20 @@ if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'admin') {
 
     <?php
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+I         // Sanitize and validate user inputs
         $myid = $mysqli->real_escape_string($_POST['id']);
         $myname = $mysqli->real_escape_string($_POST['name']);
         $myprice = $mysqli->real_escape_string($_POST['price']);
 
         if (!empty($myname) && is_numeric($myprice)) {
+            // Use prepared statements to prevent SQL injection
             $stmt = $mysqli->prepare("UPDATE products SET name=?, price=? WHERE id=?");
             $stmt->bind_param("sdi", $myname, $myprice, $myid);
 
             if ($stmt->execute()) {
                 echo "<p class='message'>$myname updated successfully!</p>";
             } else {
-                echo "<p class='error'>Error: " . $stmt->error . "</p>";
+                echo "<p class='error'>Error: " . htmlspecialchars($stmt->error) . "</p>";
             }
 
             $stmt->close();
@@ -44,13 +46,19 @@ if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'admin') {
     }
 
     if (isset($_GET['id'])) {
+        // Sanitize and validate the ID parameter
         $myid = $mysqli->real_escape_string($_GET['id']);
-        $stmt = $mysqli->prepare("SELECT * FROM products WHERE id=?");
-        $stmt->bind_param("i", $myid);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $row = $result->fetch_assoc();
-        $stmt->close();
+        if (is_numeric($myid)) {
+            // Use prepared statements to prevent SQL injection
+            $stmt = $mysqli->prepare("SELECT * FROM products WHERE id=?");
+            $stmt->bind_param("i", $myid);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+            $stmt->close();
+        } else {
+            echo "<p class='error'>Invalid product ID.</p>";
+        }
     }
     ?>
 

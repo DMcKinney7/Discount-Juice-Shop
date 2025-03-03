@@ -9,25 +9,30 @@ if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'admin') {
     exit();
 }
 ?>
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Products - Discount Juice Shop</title>
+    <link rel="stylesheet" href="../default.css">
+</head>
 <body>
 
 <h1>Products</h1>
 
 <?php
+// SQL injection mitigation: Use prepared statements with parameterized queries
+$stmt = $mysqli->prepare("SELECT id, name, price FROM products");
+$stmt->execute();
+$result = $stmt->get_result();
 
-$sql = "SELECT * FROM products";
-
-// This is the procedural style to query the database
-$result = mysqli_query($mysqli, $sql);
-
-while($row = mysqli_fetch_array($result)) {
-	echo "{$row['name']} \${$row['price']} 
-		<a href='update.php?id={$row['id']}'>update</a> 
-		<a href='delete.php?id={$row['id']}'>delete</a>
-		<br />";
+while ($row = $result->fetch_assoc()) {
+    echo htmlspecialchars($row['name']) . " $" . htmlspecialchars($row['price']) . " 
+        <a href='update.php?id=" . htmlspecialchars($row['id']) . "'>update</a> 
+        <a href='delete.php?id=" . htmlspecialchars($row['id']) . "'>delete</a>
+        <br />";
 }
 
+$stmt->close();
 ?>
 
 </body>

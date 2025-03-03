@@ -2,7 +2,7 @@
 session_start();
 require_once "/var/www/html/Discount-Juice-Shop/Connections/db.inc.php";
 
-// Check if the user is logged in and is 'admin '
+// Check if the user is logged in and is 'admin'
 if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'admin') {
     // Redirect to the login page if not logged in or not 'admin'
     header("Location: ../login.php");
@@ -85,14 +85,15 @@ if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'admin') {
     <div class="product-list">
         <?php
         if (isset($_GET['search'])) {
-            $search = $mysqli->real_escape_string($_GET['search']);
+            // SQL injection mitigation: Use prepared statements with parameterized queries
+            $search = '%' . $mysqli->real_escape_string($_GET['search']) . '%';
+            $stmt = $mysqli->prepare("SELECT * FROM products WHERE name LIKE ? ORDER BY name ASC");
+            $stmt->bind_param("s", $search);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
-            $sql = "SELECT * FROM products WHERE name LIKE '%$search%' ORDER BY name ASC";
-
-            $result = mysqli_query($mysqli, $sql);
-
-            if (mysqli_num_rows($result) > 0) {
-                while ($row = mysqli_fetch_assoc($result)) {
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
                     echo "<div class='product-item'>";
                     echo htmlspecialchars($row["name"]) . " ($" . htmlspecialchars($row["price"]) . ")";
                     if (isset($_SESSION['signed_in']) && $_SESSION['signed_in'] === true) {
@@ -104,6 +105,8 @@ if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'admin') {
             } else {
                 echo "<p>No products found.</p>";
             }
+
+            $stmt->close();
         }
         ?>
     </div>

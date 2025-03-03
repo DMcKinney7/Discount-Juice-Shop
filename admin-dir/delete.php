@@ -24,7 +24,8 @@ if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'admin') {
     <?php
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (isset($_POST['id'])) {
-            $myid = $mysqli->real_escape_string($_POST['id']);
+            // SQL injection mitigation: Use prepared statements with parameterized queries
+            $myid = $_POST['id'];
 
             $stmt = $mysqli->prepare("DELETE FROM products WHERE id = ?");
             $stmt->bind_param("i", $myid);
