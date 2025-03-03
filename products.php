@@ -25,6 +25,9 @@
             margin: 5px 0 0;
             color: #666;
         }
+        .buy-now-form {
+            margin-top: 10px;
+        }
     </style>
 </head>
 
@@ -44,6 +47,11 @@
                 echo "<div class='product-item'>";
                 echo "<h3>" . htmlspecialchars($row["name"]) . "</h3>";
                 echo "<p>$" . htmlspecialchars($row["price"]) . "</p>";
+                echo "<form class='buy-now-form' action='/Discount-Juice-Shop/cart/index.php' method='POST'>";
+                echo "<input type='hidden' name='product_id' value='" . htmlspecialchars($row['id']) . "' />";
+                echo "<input type='hidden' name='price' value='" . htmlspecialchars($row['price']) . "' />";
+                echo "<input type='submit' value='Buy Now' />";
+                echo "</form>";
                 echo "</div>";
             }
             mysqli_free_result($result);

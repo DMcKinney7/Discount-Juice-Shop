@@ -2,9 +2,9 @@
 session_start();
 require_once "/var/www/html/Discount-Juice-Shop/Connections/db.inc.php";
 
-// Check if the user is logged in and is 'bitstudent'
-if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'bitstudent') {
-    // Redirect to the login page if not logged in or not 'bitstudent'
+// Check if the user is logged in and is 'admin '
+if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'admin') {
+    // Redirect to the login page if not logged in or not 'admin'
     header("Location: ../login.php");
     exit();
 }

@@ -16,8 +16,8 @@ require_once "/var/www/html/Discount-Juice-Shop/Connections/db.inc.php";
 
     <?php
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $myusername = htmlspecialchars($mysqli->real_escape_string($_POST['username']));
-        $mypassword = htmlspecialchars($mysqli->real_escape_string($_POST['password']));
+        $myusername = $mysqli->real_escape_string($_POST['username']);
+        $mypassword = $mysqli->real_escape_string($_POST['password']);
 
         $stmt = $mysqli->prepare("SELECT * FROM users WHERE username=? AND password=SHA2(?, 256)");
         $stmt->bind_param("ss", $myusername, $mypassword);
