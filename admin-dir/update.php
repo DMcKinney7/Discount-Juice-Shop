@@ -23,7 +23,7 @@ if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'admin') {
 
     <?php
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-I         // Sanitize and validate user inputs
+         // Sanitize and validate user inputs
         $myid = $mysqli->real_escape_string($_POST['id']);
         $myname = $mysqli->real_escape_string($_POST['name']);
         $myprice = $mysqli->real_escape_string($_POST['price']);
