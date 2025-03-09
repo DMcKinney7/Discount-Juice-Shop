@@ -70,7 +70,6 @@ while ($row = mysqli_fetch_array($results)) {
 <?php include("header.inc.php"); ?>
 
 <div class="container">
-    <p>CSRF Token: <?= htmlspecialchars($_SESSION["csrf_token"]) ?></p>
     <a href="/"><img src="images/logo.jpg" alt="Discount Juice Shop Logo" class="logo"></a>
     <h1>Welcome to Discount Juice!</h1>
     <h2>Search for Products</h2>
