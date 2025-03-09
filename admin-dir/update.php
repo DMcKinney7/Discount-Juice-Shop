@@ -8,6 +8,11 @@ if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'admin') {
     header("Location: ../login.php");
     exit();
 }
+
+// Generate a new CSRF token if it's not already set
+if (empty($_SESSION["csrf_token"])) {
+    $_SESSION["csrf_token"] = bin2hex(random_bytes(64));
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,7 +28,13 @@ if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'admin') {
 
     <?php
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-         // Sanitize and validate user inputs
+        // Check CSRF token
+        $csrf_token = $_POST['csrf_token'] ?? null;
+        if ($csrf_token !== $_SESSION['csrf_token']) {
+            die("Invalid CSRF token");
+        }
+
+        // Sanitize and validate user inputs
         $myid = $mysqli->real_escape_string($_POST['id']);
         $myname = $mysqli->real_escape_string($_POST['name']);
         $myprice = $mysqli->real_escape_string($_POST['price']);
@@ -34,7 +45,7 @@ if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'admin') {
             $stmt->bind_param("sdi", $myname, $myprice, $myid);
 
             if ($stmt->execute()) {
-                echo "<p class='message'>$myname updated successfully!</p>";
+                echo "<p class='message'>" . htmlspecialchars($myname) . " updated successfully!</p>";
             } else {
                 echo "<p class='error'>Error: " . htmlspecialchars($stmt->error) . "</p>";
             }
@@ -63,6 +74,7 @@ if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'admin') {
     ?>
 
     <form method="POST" action="update.php">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" />
         <input type="hidden" name="id" value="<?= htmlspecialchars($row['id']) ?>" />
 
         <label for="name">Name:</label>

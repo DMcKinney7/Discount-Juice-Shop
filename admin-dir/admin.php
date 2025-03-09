@@ -8,6 +8,11 @@ if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'admin') {
     header("Location: ../login.php");
     exit();
 }
+
+// Generate a new CSRF token if it's not already set
+if (empty($_SESSION["csrf_token"])) {
+    $_SESSION["csrf_token"] = bin2hex(random_bytes(64));
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -79,12 +84,19 @@ if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'admin') {
     <h2>Search Products</h2>
     <form method="GET" action="admin.php">
         <input type="text" name="search" placeholder="Enter product name" />
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" />
         <input type="submit" value="Search" />
     </form>
 
     <div class="product-list">
         <?php
-        if (isset($_GET['search'])) {
+        if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search'])) {
+            // Check CSRF token
+            $csrf_token = $_GET['csrf_token'] ?? null;
+            if ($csrf_token !== $_SESSION['csrf_token']) {
+                die("Invalid CSRF token");
+            }
+
             // SQL injection mitigation: Use prepared statements with parameterized queries
             $search = '%' . $mysqli->real_escape_string($_GET['search']) . '%';
             $stmt = $mysqli->prepare("SELECT * FROM products WHERE name LIKE ? ORDER BY name ASC");

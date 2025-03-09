@@ -8,6 +8,11 @@ if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'admin') {
     header("Location: ../login.php");
     exit();
 }
+
+// Generate a new CSRF token if it's not already set
+if (empty($_SESSION["csrf_token"])) {
+    $_SESSION["csrf_token"] = bin2hex(random_bytes(64));
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,6 +28,12 @@ if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'admin') {
 
     <?php
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        // Check CSRF token
+        $csrf_token = $_POST['csrf_token'] ?? null;
+        if ($csrf_token !== $_SESSION['csrf_token']) {
+            die("Invalid CSRF token");
+        }
+
         if (isset($_POST['id'])) {
             // SQL injection mitigation: Use prepared statements with parameterized queries
             $myid = $_POST['id'];
@@ -33,7 +44,7 @@ if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'admin') {
             if ($stmt->execute()) {
                 echo "<p class='message'>Product successfully deleted.</p>";
             } else {
-                echo "<p class='error'>Error: " . $stmt->error . "</p>";
+                echo "<p class='error'>Error: " . htmlspecialchars($stmt->error) . "</p>";
             }
 
             $stmt->close();
@@ -44,6 +55,7 @@ if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'admin') {
     ?>
 
     <form method="POST" action="delete.php">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" />
         <label for="id">Product ID:</label>
         <input type="text" id="id" name="id" required />
         <input type="submit" value="Delete Product" />

@@ -5,6 +5,11 @@ session_start();
 // Required our database connection
 require_once "/var/www/html/Discount-Juice-Shop/Connections/db.inc.php"; 
 
+// Generate a new CSRF token if it's not already set
+if (empty($_SESSION["csrf_token"])) {
+    $_SESSION["csrf_token"] = bin2hex(random_bytes(64));
+}
+
 // Form variables
 $myproduct_id = $_POST['product_id'] ?? null;
 $myprice = $_POST['price'] ?? null;
@@ -18,6 +23,12 @@ if (!empty($myremove_product_id)) {
 
 // If the user sent a product_id, add the quantity to the existing cart quantity
 if (!empty($myproduct_id) && !empty($myprice)) {
+    // Check CSRF token
+    $csrf_token = $_POST['csrf_token'] ?? null;
+    if ($csrf_token !== $_SESSION['csrf_token']) {
+        die("Invalid CSRF token");
+    }
+
     if (!isset($_SESSION['cart'][$myproduct_id])) {
         $_SESSION['cart'][$myproduct_id] = [];
     }

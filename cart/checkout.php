@@ -11,6 +11,11 @@ if(empty($_SESSION['cart'])) {
     exit();
 }
 
+// Generate a new CSRF token if it's not already set
+if (empty($_SESSION["csrf_token"])) {
+    $_SESSION["csrf_token"] = bin2hex(random_bytes(64));
+}
+
 // Form variables
 $myname = $_REQUEST['name'] ?? '';
 $mystreet = $_REQUEST['street'] ?? '';
@@ -70,10 +75,28 @@ $mysecuritycode = $_REQUEST['securitycode'] ?? '';
     // BEGIN: If-else field check
     // If ALL of the fields have been submitted, enter the order
     if (!empty($myname) && !empty($mystreet) && !empty($mycity) && !empty($myzip) && !empty($mycreditcard) && !empty($myexpiration) && !empty($mysecuritycode)) {
+        // Check CSRF token
+        $csrf_token = $_POST['csrf_token'] ?? null;
+        if ($csrf_token !== $_SESSION['csrf_token']) {
+            die("Invalid CSRF token");
+        }
+
+        // Sanitize and validate user inputs
+        $myname = $mysqli->real_escape_string($myname);
+        $mystreet = $mysqli->real_escape_string($mystreet);
+        $mycity = $mysqli->real_escape_string($mycity);
+        $mystate = $mysqli->real_escape_string($mystate);
+        $myzip = $mysqli->real_escape_string($myzip);
+        $mycreditcard = $mysqli->real_escape_string($mycreditcard);
+        $myexpiration = $mysqli->real_escape_string($myexpiration);
+        $mysecuritycode = $mysqli->real_escape_string($mysecuritycode);
+
         // Insert the order into the database
-        $sql = "INSERT INTO orders (name, street, city, state, zip, creditcard, expiration, securitycode) VALUES ('$myname', '$mystreet', '$mycity', '$mystate', '$myzip', '$mycreditcard', '$myexpiration', '$mysecuritycode')";
-        mysqli_query($mysqli, $sql);
-        $order_id = mysqli_insert_id($mysqli);
+        $stmt = $mysqli->prepare("INSERT INTO orders (name, street, city, state, zip, creditcard, expiration, securitycode) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssssss", $myname, $mystreet, $mycity, $mystate, $myzip, $mycreditcard, $myexpiration, $mysecuritycode);
+        $stmt->execute();
+        $order_id = $stmt->insert_id;
+        $stmt->close();
 
         // Loop through the items in the shopping cart
         $shopping_cart_total = 0;
@@ -82,8 +105,10 @@ $mysecuritycode = $_REQUEST['securitycode'] ?? '';
                 $shopping_cart_total += $item_quantity * $item_price;
 
                 // Foreach product ordered, add the product id, quantity, and price
-                $sql = "INSERT INTO line_items (order_id, product_id, quantity, price) VALUES ($order_id, $item_product_id, $item_quantity, $item_price)";
-                mysqli_query($mysqli, $sql);
+                $stmt = $mysqli->prepare("INSERT INTO line_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)");
+                $stmt->bind_param("iiid", $order_id, $item_product_id, $item_quantity, $item_price);
+                $stmt->execute();
+                $stmt->close();
             }
         }
 
@@ -91,7 +116,7 @@ $mysecuritycode = $_REQUEST['securitycode'] ?? '';
         unset($_SESSION['cart']);
     ?>
 
-        <p>Thank you for your order! Your order confirmation number is <strong><?= $order_id ?></strong>, and you have been charged <strong>$<?= number_format($shopping_cart_total,2) ?></strong>. Please allow 5-30 business days to receive it in the post.</p>
+        <p>Thank you for your order! Your order confirmation number is <strong><?= htmlspecialchars($order_id) ?></strong>, and you have been charged <strong>$<?= number_format($shopping_cart_total,2) ?></strong>. Please allow 5-30 business days to receive it in the post.</p>
         <p><em>Just when you've forgotten about it, or decide you want a refund, it'll show up for sure! (Or just wait another day or two...)</em></p>
 
     <?php
@@ -105,6 +130,7 @@ $mysecuritycode = $_REQUEST['securitycode'] ?? '';
 
     <p>Please enter your billing details.</p>
     <form method="POST" action="checkout.php">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" />
         <table>
             <tr>
                 <th><label for="name">Name</label></th>

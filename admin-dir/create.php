@@ -8,6 +8,11 @@ if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'admin') {
     header("Location: ../login.php");
     exit();
 }
+
+// Generate a new CSRF token if it's not already set
+if (empty($_SESSION["csrf_token"])) {
+    $_SESSION["csrf_token"] = bin2hex(random_bytes(64));
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,8 +28,14 @@ if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'admin') {
 
     <?php
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        // Check CSRF token
+        $csrf_token = $_POST['csrf_token'] ?? null;
+        if ($csrf_token !== $_SESSION['csrf_token']) {
+            die("Invalid CSRF token");
+        }
+
         // SQL injection mitigation: Use prepared statements with parameterized queries
-        $myname = $_POST['name'];
+        $myname = $mysqli->real_escape_string($_POST['name']);
         $myprice = $_POST['price'];
 
         if (!empty($myname) && is_numeric($myprice)) {
@@ -32,9 +43,9 @@ if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'admin') {
             $stmt->bind_param("sd", $myname, $myprice);
 
             if ($stmt->execute()) {
-                echo "<p class='message'>Product $myname created successfully!</p>";
+                echo "<p class='message'>Product " . htmlspecialchars($myname) . " created successfully!</p>";
             } else {
-                echo "<p class='error'>Error: " . $stmt->error . "</p>";
+                echo "<p class='error'>Error: " . htmlspecialchars($stmt->error) . "</p>";
             }
 
             $stmt->close();
@@ -45,6 +56,8 @@ if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'admin') {
     ?>
 
     <form method="POST" action="create.php">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" />
+
         <label>Name:</label>
         <input type="text" name="name" required />
 

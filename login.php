@@ -1,6 +1,11 @@
 <?php
 session_start();
 require_once "/var/www/html/Discount-Juice-Shop/Connections/db.inc.php";
+
+// Generate a new CSRF token if it's not already set
+if (empty($_SESSION["csrf_token"])) {
+    $_SESSION["csrf_token"] = bin2hex(random_bytes(64));
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -16,6 +21,12 @@ require_once "/var/www/html/Discount-Juice-Shop/Connections/db.inc.php";
 
     <?php
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        // Check CSRF token
+        $csrf_token = $_POST['csrf_token'] ?? null;
+        if ($csrf_token !== $_SESSION['csrf_token']) {
+            die("Invalid CSRF token");
+        }
+
         // SQL injection mitigation: Use real_escape_string to sanitize user input
         $myusername = $mysqli->real_escape_string($_POST['username']);
         $mypassword = $mysqli->real_escape_string($_POST['password']);
@@ -49,7 +60,7 @@ require_once "/var/www/html/Discount-Juice-Shop/Connections/db.inc.php";
     ?>
 
     <form method="POST" action="login.php">
-        <input type="hidden" name="redirect" value="index.php" />
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" />
 
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required />

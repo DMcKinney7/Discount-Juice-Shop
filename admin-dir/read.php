@@ -8,6 +8,11 @@ if (!isset($_SESSION['signed_in']) || $_SESSION['username'] !== 'admin') {
     header("Location: ../login.php");
     exit();
 }
+
+// Generate a new CSRF token if it's not already set
+if (empty($_SESSION["csrf_token"])) {
+    $_SESSION["csrf_token"] = bin2hex(random_bytes(64));
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -27,8 +32,8 @@ $result = $stmt->get_result();
 
 while ($row = $result->fetch_assoc()) {
     echo htmlspecialchars($row['name']) . " $" . htmlspecialchars($row['price']) . " 
-        <a href='update.php?id=" . htmlspecialchars($row['id']) . "'>update</a> 
-        <a href='delete.php?id=" . htmlspecialchars($row['id']) . "'>delete</a>
+        <a href='update.php?id=" . htmlspecialchars($row['id']) . "&csrf_token=" . htmlspecialchars($_SESSION['csrf_token']) . "'>update</a> 
+        <a href='delete.php?id=" . htmlspecialchars($row['id']) . "&csrf_token=" . htmlspecialchars($_SESSION['csrf_token']) . "'>delete</a>
         <br />";
 }
 

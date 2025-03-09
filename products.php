@@ -1,4 +1,12 @@
-<?php require_once "/var/www/html/Discount-Juice-Shop/Connections/db.inc.php"; ?>
+<?php
+session_start();
+require_once "/var/www/html/Discount-Juice-Shop/Connections/db.inc.php";
+
+// Generate a new CSRF token if it's not already set
+if (empty($_SESSION["csrf_token"])) {
+    $_SESSION["csrf_token"] = bin2hex(random_bytes(64));
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -48,6 +56,8 @@
                 echo "<h3>" . htmlspecialchars($row["name"]) . "</h3>";
                 echo "<p>$" . htmlspecialchars($row["price"]) . "</p>";
                 echo "<form class='buy-now-form' action='/Discount-Juice-Shop/cart/index.php' method='POST'>";
+                // Include CSRF token for security
+                echo "<input type='hidden' name='csrf_token' value='" . $_SESSION['csrf_token'] . "' />";
                 echo "<input type='hidden' name='product_id' value='" . htmlspecialchars($row['id']) . "' />";
                 echo "<input type='hidden' name='price' value='" . htmlspecialchars($row['price']) . "' />";
                 echo "<input type='submit' value='Buy Now' />";
