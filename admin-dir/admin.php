@@ -84,7 +84,7 @@ if (empty($_SESSION["csrf_token"])) {
     <h2>Search Products</h2>
     <form method="POST" action="admin.php">
         <input type="text" name="search" placeholder="Enter product name" />
-        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" />
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" /> <!-- XSS mitigation -->
         <input type="submit" value="Search" />
     </form>
 
@@ -98,19 +98,20 @@ if (empty($_SESSION["csrf_token"])) {
             }
 
             // SQL injection mitigation: Use prepared statements with parameterized queries
-            $search = '%' . $mysqli->real_escape_string($_POST['search']) . '%';
+            $search = '%' . $mysqli->real_escape_string($_POST['search']) . '%'; // SQL injection mitigation
             $stmt = $mysqli->prepare("SELECT * FROM products WHERE name LIKE ? ORDER BY id ASC");
-            $stmt->bind_param("s", $search);
+            $stmt->bind_param("s", $search); // SQL injection mitigation
             $stmt->execute();
             $result = $stmt->get_result();
 
             if ($result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
                     echo "<div class='product-item'>";
-                    echo htmlspecialchars($row["id"]) . " - " . htmlspecialchars($row["name"]) . " ($" . htmlspecialchars($row["price"]) . ")";
+                    // Sanitize output to prevent XSS attacks
+                    echo htmlspecialchars($row["id"]) . " - " . htmlspecialchars($row["name"]) . " ($" . htmlspecialchars($row["price"]) . ")"; // XSS mitigation
                     if (isset($_SESSION['signed_in']) && $_SESSION['signed_in'] === true) {
-                        echo " <a href='update.php?id=" . htmlspecialchars($row['id']) . "'>Update</a>";
-                        echo " <a href='delete.php?id=" . htmlspecialchars($row['id']) . "'>Delete</a>";
+                        echo " <a href='update.php?id=" . htmlspecialchars($row['id']) . "'>Update</a>"; // XSS mitigation
+                        echo " <a href='delete.php?id=" . htmlspecialchars($row['id']) . "'>Delete</a>"; // XSS mitigation
                     }
                     echo "</div>";
                 }

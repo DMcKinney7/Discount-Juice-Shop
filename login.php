@@ -60,7 +60,7 @@ if (empty($_SESSION["csrf_token"])) {
     ?>
 
     <form method="POST" action="login.php">
-        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" />
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" /> <!-- XSS mitigation -->
 
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required />

@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($myproduct_id)) {
         // Prepare the statement to get the price from the database
         $stmt = $mysqli->prepare("SELECT price FROM products WHERE id=?");
-        $stmt->bind_param("i", $myproduct_id);
+        $stmt->bind_param("i", $myproduct_id); // SQL injection mitigation
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
@@ -83,12 +83,12 @@ while ($row = mysqli_fetch_array($results)) {
         <?php
         if (isset($_GET['search'])) {
             // Sanitize user input to prevent SQL injection
-            $search = $mysqli->real_escape_string($_GET['search']);
+            $search = $mysqli->real_escape_string($_GET['search']); // SQL injection mitigation
 
             // Use prepared statements to prevent SQL injection
             $stmt = $mysqli->prepare("SELECT * FROM products WHERE name LIKE ? ORDER BY name ASC");
             $search_param = "%$search%";
-            $stmt->bind_param("s", $search_param);
+            $stmt->bind_param("s", $search_param); // SQL injection mitigation
             $stmt->execute();
             $result = $stmt->get_result();
 
@@ -96,11 +96,11 @@ while ($row = mysqli_fetch_array($results)) {
                 while ($row = $result->fetch_assoc()) {
                     echo "<div class='product-item'>";
                     // Sanitize output to prevent XSS attacks
-                    echo "<h3>" . htmlspecialchars($row["name"]) . "</h3>";
-                    echo "<p>$" . htmlspecialchars($row["price"]) . "</p>";
+                    echo "<h3>" . htmlspecialchars($row["name"]) . "</h3>"; // XSS mitigation
+                    echo "<p>$" . htmlspecialchars($row["price"]) . "</p>"; // XSS mitigation
                     echo "<form class='buy-now-form' action='/Discount-Juice-Shop/cart/index.php' method='POST'>";
                     // Include CSRF token for security
-                    echo "<input type='hidden' name='product_id' value='" . htmlspecialchars($row['id']) . "' />";
+                    echo "<input type='hidden' name='product_id' value='" . htmlspecialchars($row['id']) . "' />"; // XSS mitigation
                     echo "<input type='hidden' name='csrf_token' value='" . $_SESSION['csrf_token'] . "' />";
                     echo "<label for='quantity'>Quantity:</label>";
                     // Add quantity input with validation

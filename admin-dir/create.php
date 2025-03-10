@@ -34,18 +34,21 @@ if (empty($_SESSION["csrf_token"])) {
             die("Invalid CSRF token");
         }
 
-        // SQL injection mitigation: Use prepared statements with parameterized queries
+        // SQL injection mitigation: Use real_escape_string to sanitize user input
         $myname = $mysqli->real_escape_string($_POST['name']);
         $myprice = $_POST['price'];
 
         if (!empty($myname) && is_numeric($myprice)) {
+            // SQL injection mitigation: Use prepared statements with parameterized queries
             $stmt = $mysqli->prepare("INSERT INTO products (name, price) VALUES (?, ?)");
             $stmt->bind_param("sd", $myname, $myprice);
 
             if ($stmt->execute()) {
-                echo "<p class='message'>Product " . htmlspecialchars($myname) . " created successfully!</p>";
+                // Sanitize output to prevent XSS attacks
+                echo "<p class='message'>Product " . htmlspecialchars($myname) . " created successfully!</p>"; // XSS mitigation
             } else {
-                echo "<p class='error'>Error: " . htmlspecialchars($stmt->error) . "</p>";
+                // Sanitize output to prevent XSS attacks
+                echo "<p class='error'>Error: " . htmlspecialchars($stmt->error) . "</p>"; // XSS mitigation
             }
 
             $stmt->close();
@@ -56,7 +59,7 @@ if (empty($_SESSION["csrf_token"])) {
     ?>
 
     <form method="POST" action="create.php">
-        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" />
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" /> <!-- XSS mitigation -->
 
         <label>Name:</label>
         <input type="text" name="name" required />

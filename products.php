@@ -53,20 +53,20 @@ if (empty($_SESSION["csrf_token"])) {
         if ($result) {
             while ($row = mysqli_fetch_array($result)) {
                 echo "<div class='product-item'>";
-                echo "<h3>" . htmlspecialchars($row["name"]) . "</h3>";
-                echo "<p>$" . htmlspecialchars($row["price"]) . "</p>";
+                echo "<h3>" . htmlspecialchars($row["name"]) . "</h3>"; // XSS mitigation
+                echo "<p>$" . htmlspecialchars($row["price"]) . "</p>"; // XSS mitigation
                 echo "<form class='buy-now-form' action='/Discount-Juice-Shop/cart/index.php' method='POST'>";
                 // Include CSRF token for security
                 echo "<input type='hidden' name='csrf_token' value='" . $_SESSION['csrf_token'] . "' />";
-                echo "<input type='hidden' name='product_id' value='" . htmlspecialchars($row['id']) . "' />";
-                echo "<input type='hidden' name='price' value='" . htmlspecialchars($row['price']) . "' />";
+                echo "<input type='hidden' name='product_id' value='" . htmlspecialchars($row['id']) . "' />"; // XSS mitigation
+                echo "<input type='hidden' name='price' value='" . htmlspecialchars($row['price']) . "' />"; // XSS mitigation
                 echo "<input type='submit' value='Buy Now' />";
                 echo "</form>";
                 echo "</div>";
             }
             mysqli_free_result($result);
         } else {
-            echo "<p class='error'>Error: " . htmlspecialchars(mysqli_error($mysqli)) . "</p>";
+            echo "<p class='error'>Error: " . htmlspecialchars(mysqli_error($mysqli)) . "</p>"; // XSS mitigation
         }
         ?>
     </div>

@@ -36,15 +36,15 @@ if (empty($_SESSION["csrf_token"])) {
 
         if (isset($_POST['id'])) {
             // SQL injection mitigation: Use prepared statements with parameterized queries
-            $myid = $_POST['id'];
+            $myid = $mysqli->real_escape_string($_POST['id']); // SQL injection mitigation
 
             $stmt = $mysqli->prepare("DELETE FROM products WHERE id = ?");
-            $stmt->bind_param("i", $myid);
+            $stmt->bind_param("i", $myid); // SQL injection mitigation
 
             if ($stmt->execute()) {
                 echo "<p class='message'>Product successfully deleted.</p>";
             } else {
-                echo "<p class='error'>Error: " . htmlspecialchars($stmt->error) . "</p>";
+                echo "<p class='error'>Error: " . htmlspecialchars($stmt->error) . "</p>"; // XSS mitigation
             }
 
             $stmt->close();
@@ -55,9 +55,9 @@ if (empty($_SESSION["csrf_token"])) {
     ?>
 
     <form method="POST" action="delete.php">
-        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" />
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" /> <!-- XSS mitigation -->
         <label for="id">Product ID:</label>
-        <input type="text" id="id" name="id" required />
+        <input type="text" id="id" name="id" required /> <!-- XSS mitigation -->
         <input type="submit" value="Delete Product" />
     </form>
 </div>

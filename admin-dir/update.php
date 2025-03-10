@@ -35,19 +35,21 @@ if (empty($_SESSION["csrf_token"])) {
         }
 
         // Sanitize and validate user inputs
-        $myid = $mysqli->real_escape_string($_POST['id']);
-        $myname = $mysqli->real_escape_string($_POST['name']);
-        $myprice = $mysqli->real_escape_string($_POST['price']);
+        $myid = $mysqli->real_escape_string($_POST['id']); // SQL injection mitigation
+        $myname = $mysqli->real_escape_string($_POST['name']); // SQL injection mitigation
+        $myprice = $mysqli->real_escape_string($_POST['price']); // SQL injection mitigation
 
         if (!empty($myid) && is_numeric($myid) && !empty($myname) && is_numeric($myprice)) {
             // Use prepared statements to prevent SQL injection
             $stmt = $mysqli->prepare("UPDATE products SET name=?, price=? WHERE id=?");
-            $stmt->bind_param("sdi", $myname, $myprice, $myid);
+            $stmt->bind_param("sdi", $myname, $myprice, $myid); // SQL injection mitigation
 
             if ($stmt->execute()) {
-                echo "<p class='message'>" . htmlspecialchars($myname) . " updated successfully!</p>";
+                // Sanitize output to prevent XSS attacks
+                echo "<p class='message'>" . htmlspecialchars($myname) . " updated successfully!</p>"; // XSS mitigation
             } else {
-                echo "<p class='error'>Error: " . htmlspecialchars($stmt->error) . "</p>";
+                // Sanitize output to prevent XSS attacks
+                echo "<p class='error'>Error: " . htmlspecialchars($stmt->error) . "</p>"; // XSS mitigation
             }
 
             $stmt->close();
@@ -58,11 +60,11 @@ if (empty($_SESSION["csrf_token"])) {
 
     if (isset($_GET['id'])) {
         // Sanitize and validate the ID parameter
-        $myid = $mysqli->real_escape_string($_GET['id']);
+        $myid = $mysqli->real_escape_string($_GET['id']); // SQL injection mitigation
         if (is_numeric($myid)) {
             // Use prepared statements to prevent SQL injection
             $stmt = $mysqli->prepare("SELECT * FROM products WHERE id=?");
-            $stmt->bind_param("i", $myid);
+            $stmt->bind_param("i", $myid); // SQL injection mitigation
             $stmt->execute();
             $result = $stmt->get_result();
             $row = $result->fetch_assoc();
@@ -74,16 +76,16 @@ if (empty($_SESSION["csrf_token"])) {
     ?>
 
     <form method="POST" action="update.php">
-        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" />
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" /> <!-- XSS mitigation -->
 
         <label for="id">Product ID:</label>
-        <input type="text" id="id" name="id" value="<?= htmlspecialchars($row['id']) ?>" required />
+        <input type="text" id="id" name="id" value="<?= htmlspecialchars($row['id']) ?>" required /> <!-- XSS mitigation -->
 
         <label for="name">Name:</label>
-        <input type="text" id="name" name="name" value="<?= htmlspecialchars($row['name']) ?>" required />
+        <input type="text" id="name" name="name" value="<?= htmlspecialchars($row['name']) ?>" required /> <!-- XSS mitigation -->
 
         <label for="price">Price:</label>
-        <input type="number" step="0.01" id="price" name="price" value="<?= htmlspecialchars($row['price']) ?>" required />
+        <input type="number" step="0.01" id="price" name="price" value="<?= htmlspecialchars($row['price']) ?>" required /> <!-- XSS mitigation -->
 
         <input type="submit" value="Update" />
     </form>
