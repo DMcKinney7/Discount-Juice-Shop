@@ -82,7 +82,7 @@ if (empty($_SESSION["csrf_token"])) {
 <div class="container">
     <h1>Admin Panel</h1>
     <h2>Search Products</h2>
-    <form method="GET" action="admin.php">
+    <form method="POST" action="admin.php">
         <input type="text" name="search" placeholder="Enter product name" />
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" />
         <input type="submit" value="Search" />
@@ -90,16 +90,16 @@ if (empty($_SESSION["csrf_token"])) {
 
     <div class="product-list">
         <?php
-        if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search'])) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search'])) {
             // Check CSRF token
-            $csrf_token = $_GET['csrf_token'] ?? null;
+            $csrf_token = $_POST['csrf_token'] ?? null;
             if ($csrf_token !== $_SESSION['csrf_token']) {
                 die("Invalid CSRF token");
             }
 
             // SQL injection mitigation: Use prepared statements with parameterized queries
-            $search = '%' . $mysqli->real_escape_string($_GET['search']) . '%';
-            $stmt = $mysqli->prepare("SELECT * FROM products WHERE name LIKE ? ORDER BY name ASC");
+            $search = '%' . $mysqli->real_escape_string($_POST['search']) . '%';
+            $stmt = $mysqli->prepare("SELECT * FROM products WHERE name LIKE ? ORDER BY id ASC");
             $stmt->bind_param("s", $search);
             $stmt->execute();
             $result = $stmt->get_result();
@@ -107,7 +107,7 @@ if (empty($_SESSION["csrf_token"])) {
             if ($result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
                     echo "<div class='product-item'>";
-                    echo htmlspecialchars($row["name"]) . " ($" . htmlspecialchars($row["price"]) . ")";
+                    echo htmlspecialchars($row["id"]) . " - " . htmlspecialchars($row["name"]) . " ($" . htmlspecialchars($row["price"]) . ")";
                     if (isset($_SESSION['signed_in']) && $_SESSION['signed_in'] === true) {
                         echo " <a href='update.php?id=" . htmlspecialchars($row['id']) . "'>Update</a>";
                         echo " <a href='delete.php?id=" . htmlspecialchars($row['id']) . "'>Delete</a>";

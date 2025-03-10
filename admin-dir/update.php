@@ -39,7 +39,7 @@ if (empty($_SESSION["csrf_token"])) {
         $myname = $mysqli->real_escape_string($_POST['name']);
         $myprice = $mysqli->real_escape_string($_POST['price']);
 
-        if (!empty($myname) && is_numeric($myprice)) {
+        if (!empty($myid) && is_numeric($myid) && !empty($myname) && is_numeric($myprice)) {
             // Use prepared statements to prevent SQL injection
             $stmt = $mysqli->prepare("UPDATE products SET name=?, price=? WHERE id=?");
             $stmt->bind_param("sdi", $myname, $myprice, $myid);
@@ -52,7 +52,7 @@ if (empty($_SESSION["csrf_token"])) {
 
             $stmt->close();
         } else {
-            echo "<p class='error'>Please enter a valid name and price.</p>";
+            echo "<p class='error'>Please enter a valid ID, name, and price.</p>";
         }
     }
 
@@ -75,7 +75,9 @@ if (empty($_SESSION["csrf_token"])) {
 
     <form method="POST" action="update.php">
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" />
-        <input type="hidden" name="id" value="<?= htmlspecialchars($row['id']) ?>" />
+
+        <label for="id">Product ID:</label>
+        <input type="text" id="id" name="id" value="<?= htmlspecialchars($row['id']) ?>" required />
 
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" value="<?= htmlspecialchars($row['name']) ?>" required />

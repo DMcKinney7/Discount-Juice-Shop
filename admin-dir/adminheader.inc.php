@@ -5,6 +5,7 @@ session_start();
 $navItems = [
     ['label' => 'Home', 'url' => '../index.php'],
     ['label' => 'Products', 'url' => '../products.php'],
+    ['label' => 'Admin Panel', 'url' => '../admin-dir/admin.php'],
     ['label' => 'Create Product', 'url' => '../admin-dir/create.php'],
     ['label' => 'Update Product', 'url' => '../admin-dir/update.php'],
     ['label' => 'Delete Product', 'url' => '../admin-dir/delete.php']
