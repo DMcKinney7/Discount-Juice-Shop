@@ -31,7 +31,7 @@ if (empty($_SESSION["csrf_token"])) {
         // Check CSRF token
         $csrf_token = $_POST['csrf_token'] ?? null;
         if ($csrf_token !== $_SESSION['csrf_token']) {
-            die("Invalid CSRF token");
+            die("Invalid CSRF token"); // CSRF mitigation
         }
 
         if (isset($_POST['id'])) {
@@ -55,7 +55,7 @@ if (empty($_SESSION["csrf_token"])) {
     ?>
 
     <form method="POST" action="delete.php">
-        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" /> <!-- XSS mitigation -->
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" /> <!-- CSRF mitigation, XSS mitigation -->
         <label for="id">Product ID:</label>
         <input type="text" id="id" name="id" required /> <!-- XSS mitigation -->
         <input type="submit" value="Delete Product" />
